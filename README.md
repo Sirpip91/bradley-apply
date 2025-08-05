@@ -22,16 +22,32 @@ Bradley Apply helps you track job applications, generate custom cover letters us
 
 
 ## Development
+
+Create a new Python virtual environment named `.venv`:
+
+```bash
+python3 -m venv .venv
+```
+
 use this to activate python lib
+
+```bash
 source .venv/bin/activate
+```
 
 install the needed lib
-pip install -r requirements.txt
 
+```bash
+pip install -r requirements.txt
+```
 
 
 use this to run the application
-streamlit run app.py
+```bash
+streamlit run Home.py
+```
 
 use this to deactiveate the venv
+```bash
 deactivate
+```
