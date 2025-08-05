@@ -5,6 +5,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import PyPDF2
 import datetime
+from fpdf import FPDF
 
 # Load .env variables
 load_dotenv()
@@ -26,8 +27,6 @@ else:
         Note: generating cover letters consumes API credits. Monitor your usage to avoid unexpected charges.
         """
     )
-
-
     
 
 openai = OpenAI(api_key=api_key)
@@ -144,7 +143,8 @@ if st.button("Generate Cover Letter"):
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": role_description},
-                {"role": "user", "content": content}
+                   {"role": "user", "content": content + "\n\nPlease do NOT include any placeholders like '[Your Name]' or signature lines."}
+                
             ]
         )
         cover_letter = response.choices[0].message.content
@@ -153,10 +153,69 @@ if st.button("Generate Cover Letter"):
         cover_letter_path = os.path.join(session_folder, "cover_letter.txt")
         with open(cover_letter_path, "w", encoding="utf-8") as f:
             f.write(cover_letter)
+            
+            # ---- USER INFO (EDIT TO MATCH YOURS) TODO ADD PULL FROM COMMON INFORMATION----
+            USER_NAME = ""  # Or extract from resume filename
+            USER_EMAIL = ""
+            USER_WEBSITE = ""
+
+
+            def generate_pdf(cover_letter_body, output_path, company, title):
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.set_auto_page_break(auto=True, margin=15)
+
+                # Header
+                pdf.set_font("Times", size=12)
+                today = datetime.datetime.now().strftime("%B %d, %Y")
+                if USER_EMAIL:
+                    pdf.cell(0, 10, USER_NAME, ln=True)
+                if USER_EMAIL:
+                    pdf.cell(0, 10, USER_EMAIL, ln=True)
+                if USER_WEBSITE:
+                    pdf.set_text_color(0, 0, 255)
+                    pdf.set_font("Times", size=12, style='U')  # Specify family, size, and underline style
+                    pdf.write(10, USER_WEBSITE, USER_WEBSITE)  # clickable link
+                    pdf.set_text_color(0, 0, 0)                # reset color
+                    pdf.set_font("Times", size=12, style='')  # reset font style to normal
+                    pdf.ln(10)
+                pdf.cell(0, 10, today, ln=True)
+                pdf.cell(0, 10, company, ln=True)
+                pdf.ln(10)
+
+                # Body
+                pdf.set_font("Times", size=12)
+                for paragraph in cover_letter_body.split('\n'):
+                    if paragraph.strip() != "":
+                        pdf.multi_cell(0, 10, paragraph.strip())
+                        pdf.ln(1)
+
+                # Footer / Signature
+                pdf.cell(0, 10, USER_NAME, ln=True)
+
+                pdf.output(output_path)
+
+            # ---- Create PDF path ----
+            safe_user = sanitize_filename(USER_NAME)
+            pdf_filename = f"{safe_user}_{safe_company}_cover_letter.pdf"
+            pdf_path = os.path.join(session_folder, pdf_filename)
+
+            # ---- Generate PDF ----
+            generate_pdf(cover_letter, pdf_path, company, title)
+
+            # ---- Show PDF download button ----
+            with open(pdf_path, "rb") as f:
+                st.download_button(
+                    label="📄 Download Final Cover Letter PDF",
+                    data=f,
+                    file_name=pdf_filename,
+                    mime="application/pdf"
+                )
 
         # Display generated cover letter
         st.subheader("📨 Generated Cover Letter")
         st.text_area("Cover Letter", cover_letter, height=300)
+
 
         # Download button
         st.download_button(
