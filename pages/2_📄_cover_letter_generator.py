@@ -7,6 +7,23 @@ import PyPDF2
 import datetime
 from fpdf import FPDF
 
+import json
+
+# Load user info from common_info.json
+COMMON_INFO_FILE = "data/common_info.json"
+if not os.path.exists(COMMON_INFO_FILE):
+    st.error(f"Missing `{COMMON_INFO_FILE}`. Please create it with required fields.")
+    st.stop()
+
+with open(COMMON_INFO_FILE, "r", encoding="utf-8") as f:
+    common_info = json.load(f)
+
+USER_FIRST_NAME = common_info.get("first_name", "").strip()
+USER_LAST_NAME = common_info.get("last_name", "").strip()
+USER_NAME = f"{USER_FIRST_NAME} {USER_LAST_NAME}".strip()
+USER_EMAIL = common_info.get("email", "").strip()
+USER_WEBSITE = common_info.get("link", "").strip()
+
 # Load .env variables
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -27,6 +44,26 @@ else:
         Note: generating cover letters consumes API credits. Monitor your usage to avoid unexpected charges.
         """
     )
+
+if not USER_NAME or not USER_EMAIL or not USER_WEBSITE:
+    st.warning(
+        """
+        ⚠️ **User Info Missing**  
+        You must complete your name, email, and website in the `Common Info` section before generating a cover letter.
+        """
+    )
+else:
+    st.info(
+        f"""
+        👤 **User Info Loaded**  
+        - **Name:** {USER_NAME}  
+        - **Email:** {USER_EMAIL}  
+        - **Website:** [{USER_WEBSITE}]({USER_WEBSITE})  
+        
+        To update this information, go to the **Common Info** section in the sidebar.
+        """
+    )
+    
     
 
 openai = OpenAI(api_key=api_key)
@@ -43,6 +80,13 @@ os.makedirs(BASE_OUTPUT_FOLDER, exist_ok=True)
 st.set_page_config(page_title="Cover Letter Generator", layout="wide")
 st.title("📄 AI Cover Letter Generator")
 
+
+
+# Combine name for use in the letter
+USER_NAME = f"{USER_FIRST_NAME.strip()} {USER_LAST_NAME.strip()}".strip()
+
+
+
 # List resumes in resumes folder
 resume_files = [f for f in os.listdir(RESUME_FOLDER) if f.lower().endswith(".pdf")]
 if not resume_files:
@@ -52,7 +96,8 @@ else:
     selected_resume = st.selectbox("Select Resume to Use", resume_files)
 
 # Inputs to explicitly enter company name and job title (optional)
-st.markdown("### Override extracted info (optional)")
+st.markdown("### Needed Information")
+
 explicit_title = st.text_input("Job Title (leave empty to auto-extract)")
 explicit_company = st.text_input("Company Name (leave empty to auto-extract)")
 
@@ -155,9 +200,9 @@ if st.button("Generate Cover Letter"):
             f.write(cover_letter)
             
             # ---- USER INFO (EDIT TO MATCH YOURS) TODO ADD PULL FROM COMMON INFORMATION----
-            USER_NAME = ""  # Or extract from resume filename
-            USER_EMAIL = ""
-            USER_WEBSITE = ""
+            ##USER_NAME = "John Doe" 
+            #USER_EMAIL = ""
+            #USER_WEBSITE = ""
 
 
             def generate_pdf(cover_letter_body, output_path, company, title):
@@ -211,16 +256,18 @@ if st.button("Generate Cover Letter"):
                     file_name=pdf_filename,
                     mime="application/pdf"
                 )
+        
+        st.markdown ("---")
 
         # Display generated cover letter
         st.subheader("📨 Generated Cover Letter")
+        st.markdown ("You can manually edit and copy the text below if needed.")
         st.text_area("Cover Letter", cover_letter, height=300)
 
 
-        # Download button
-        st.download_button(
-            label="📥 Download Cover Letter",
-            data=cover_letter,
-            file_name="cover_letter.txt",
-            mime="text/plain"
-        )
+st.warning(
+        """
+        If PDF cover letter is more than 2 pages please re-generate until desired result is created.
+        """
+    )
+       

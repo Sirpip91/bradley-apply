@@ -31,53 +31,52 @@ Welcome! This tool helps you streamline your job search process with:
 - 🧠 **Storing common application information**
 - 📊 **Application tracking and analytics**
 
-Use the sidebar at top left to navigate each section.
+Use the sidebar at the top left to navigate each section.
 """)
 
 # ========== 🧭 Feature Instructions ==========
 st.subheader("🧭 How to Use This App")
 
-st.markdown("#### 1. 📤 Upload Resume")
+st.markdown("#### 0. 🗃️ Enter Required Information")
 st.markdown("""
-Use the **Resume Upload** page to upload your resume. This can help auto-fill parts of your cover letter or profile information.
+Before anything else, please go to the **'0_🗃️_required_information'** page and enter your basic details such as your name, email, and link. This information is necessary for cover letter generation and application tracking.
 """)
 
-st.markdown("#### 2. 🧠 Enter Common Info")
+st.markdown("#### 1. 📤 Upload Resume")
 st.markdown("""
-Go to **'Common Info'** to enter your basic info like name, address, school, graduation year, and a few work experiences.
+After entering your required information, go to the **Resume Upload** page to upload your resume. This helps auto-fill parts of your cover letter and profile information.
+""")
 
-This info will be used to:
-- Easily copy/paste into job applications
-- Speed up cover letter generation
+st.markdown("#### 2. ⚙️ Add API Key in Settings")
+st.markdown("""
+Navigate to the **Settings** page to add your API key. This enables AI-powered cover letter generation.
 """)
 
 st.markdown("#### 3. ✉️ Generate Cover Letters")
 st.markdown("""
-Use the **Cover Letter Generator** page after uploading your resume and filling in job-specific details.
+Once your required info, resume, and API key are set up, you can use the **Cover Letter Generator** page.
 
 You can:
-- Generate letters using AI
-- Tailor them with your personal info
-- The Cover letter will read job information and your resume and create a custom letter based off the two.
+- Generate customized cover letters using AI
+- Tailor them with your personal info and job details
+- Save or copy generated letters for your applications
 """)
 
 st.markdown("#### 4. 📑 Track Job Applications")
 st.markdown("""
-Use the **Application Tracker** to log jobs you've applied to.
-
-Track:
+Use the **Application Tracker** to log jobs you've applied to, including:
 - Date
 - Position
 - Company
 - Status
 - Notes
 
-This section lets you monitor progress and avoid double applying.
+This helps you monitor your progress and avoid duplicate applications.
 """)
 
 st.markdown("#### 5. 📈 View Analytics")
 st.markdown("""
-As you log more applications, the dashboard here will update with visual charts to help track your progress.
+As you log more applications, this dashboard will update with visual charts to help you track your job search progress.
 """)
 
 # ========== 📊 Application Status ==========
@@ -117,4 +116,4 @@ else:
     st.info("No applications tracked yet. Head to **'Application Tracker'** to get started.")
 
 # ✅ Call to action
-st.success("Use the sidebar ➡️ to get started!")
+st.success("Use the sidebar ➡️ to begin! Start with **'0_🗃️_required_information'**.")
