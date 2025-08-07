@@ -1,6 +1,5 @@
 # Ignore environment variables
 .env
-data/
 cover_letters/
 resumes/
 .venv/
