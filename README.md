@@ -35,6 +35,11 @@ use this to activate python lib
 source .venv/bin/activate
 ```
 
+(for windows:)
+```bash
+.venv\Scripts\activate
+```
+
 install the needed lib
 
 ```bash
